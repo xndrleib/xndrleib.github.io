@@ -60,7 +60,7 @@
   <meta property="og:site_name" content="XNDR Blog">
   <meta property="og:title" content="Posts">
   <meta property="og:description" content="XNDR Blog">
-  <meta property="og:locale" content="en">
+  <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Posts">
@@ -137,7 +137,7 @@
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://xndrleib.github.io/">Home</a></div>
+<header class="page-header">
   <h1>
     Posts
     <a href="/posts/index.xml" title="RSS" aria-label="RSS">
@@ -167,15 +167,15 @@ This document presents an in-depth exposition of the simplex method for solving 
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">My first blog post
+    <h2 class="entry-hint-parent">Optimized Device Selection in PyTorch
     </h2>
   </header>
   <div class="entry-content">
-    <p>Hi!
-</p>
+    <p>Automatically leverage the best available hardware with this snippet:
+import torch device: str = &#39;cuda&#39; if torch.cuda.is_available() else (&#39;mps&#39; if torch.backends.mps.is_available() else &#39;cpu&#39;) device = torch.device(device) CUDA: Activates when a CUDA-enabled GPU is present. MPS: Utilizes Apple’s MPS on supported Mac devices. CPU: Defaults if no accelerator is detected. </p>
   </div>
-  <footer class="entry-footer"><span title='1970-01-01 00:00:00 +0000 UTC'>January 1, 1970</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to My first blog post" href="https://xndrleib.github.io/posts/blogpost/"></a>
+  <footer class="entry-footer">1 min&nbsp;·&nbsp;Alexander Leib-Khizhik</footer>
+  <a class="entry-link" aria-label="post link to Optimized Device Selection in PyTorch" href="https://xndrleib.github.io/posts/torch-device-selection/"></a>
 </article>
     </main>
     
