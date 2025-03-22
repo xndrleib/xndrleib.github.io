@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Simplex | XNDR Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="An In-Depth Overview of the Simplex Method
+Abstract
+This document presents an in-depth exposition of the simplex method for solving linear programs. We discuss fundamental concepts such as basic feasible solutions (BFS), the notion of adjacency between extreme points, and the nondegeneracy assumption. Both the primal and the dual simplex methods are described from a matrix–theoretic viewpoint with illustrative examples. Finally, we present a worst-case efficiency analysis under a basic value distribution assumption.">
+<meta name="author" content="Alexander Leib-Khizhik">
+<link rel="canonical" href="http://localhost:1313/posts/simplex/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css" integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF&#43;13Dyqob6ASlTrTye8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/assets/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/assets/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/assets/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/simplex/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ]
+        });
+    });
+</script>
+<meta property="og:url" content="http://localhost:1313/posts/simplex/">
+  <meta property="og:site_name" content="XNDR Blog">
+  <meta property="og:title" content="Simplex">
+  <meta property="og:description" content="An In-Depth Overview of the Simplex Method Abstract
+This document presents an in-depth exposition of the simplex method for solving linear programs. We discuss fundamental concepts such as basic feasible solutions (BFS), the notion of adjacency between extreme points, and the nondegeneracy assumption. Both the primal and the dual simplex methods are described from a matrix–theoretic viewpoint with illustrative examples. Finally, we present a worst-case efficiency analysis under a basic value distribution assumption.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-03-21T21:15:01+03:00">
+    <meta property="article:modified_time" content="2025-03-21T21:15:01+03:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Simplex">
+<meta name="twitter:description" content="An In-Depth Overview of the Simplex Method
+Abstract
+This document presents an in-depth exposition of the simplex method for solving linear programs. We discuss fundamental concepts such as basic feasible solutions (BFS), the notion of adjacency between extreme points, and the nondegeneracy assumption. Both the primal and the dual simplex methods are described from a matrix–theoretic viewpoint with illustrative examples. Finally, we present a worst-case efficiency analysis under a basic value distribution assumption.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Simplex",
+      "item": "http://localhost:1313/posts/simplex/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Simplex",
+  "name": "Simplex",
+  "description": "An In-Depth Overview of the Simplex Method Abstract\nThis document presents an in-depth exposition of the simplex method for solving linear programs. We discuss fundamental concepts such as basic feasible solutions (BFS), the notion of adjacency between extreme points, and the nondegeneracy assumption. Both the primal and the dual simplex methods are described from a matrix–theoretic viewpoint with illustrative examples. Finally, we present a worst-case efficiency analysis under a basic value distribution assumption.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "An In-Depth Overview of the Simplex Method Abstract\nThis document presents an in-depth exposition of the simplex method for solving linear programs. We discuss fundamental concepts such as basic feasible solutions (BFS), the notion of adjacency between extreme points, and the nondegeneracy assumption. Both the primal and the dual simplex methods are described from a matrix–theoretic viewpoint with illustrative examples. Finally, we present a worst-case efficiency analysis under a basic value distribution assumption.\nIntroduction The simplex method is one of the most widely used algorithms for solving linear programming (LP) problems. The method iteratively moves from one basic feasible solution (or extreme point) of the feasible region to an adjacent one, improving the objective function value at each step until optimality is reached. Theoretical results assure that it suffices to search only among basic feasible solutions, and duality theory provides termination criteria and optimality certificates. This document outlines both the primal and dual simplex methods, explains the mechanics of basis changes, and concludes with an analysis of worst-case performance.\nBasic Concepts and Notation Consider a linear program in standard form:\n$$ \\begin{aligned} \\text{minimize} \\quad \u0026 \\mathbf{c}^\\top \\mathbf{x} \\\\ \\text{subject to} \\quad \u0026 \\mathbf{A} \\mathbf{x} = \\mathbf{b}, \\\\ \u0026 \\mathbf{x} \\ge \\mathbf{0}, \\end{aligned} $$where $\\mathbf{A} \\in \\mathbb{R}^{m \\times n}$ is of full row rank, $\\mathbf{b}\\in\\mathbb{R}^m$, and $\\mathbf{c}\\in\\mathbb{R}^n$.\nA basic feasible solution (BFS) is obtained by choosing a basis (a set of $m$ linearly independent columns of $\\mathbf{A}$), solving for the corresponding basic variables, and setting the remaining $n-m$ nonbasic variables to zero. When the current basic solution is unique (i.e., all basic variables are strictly positive), it is said to be nondegenerate.\nIntuitive Explanation of a Basic Feasible Solution To build intuition, consider a simple linear program:\n$$ \\begin{aligned} \\text{minimize} \\quad \u0026 x_1 + 2x_2, \\\\ \\text{subject to} \\quad \u0026 x_1 + x_2 = 3, \\\\ \u0026 x_1,\\, x_2 \\ge 0. \\end{aligned} $$Here, the feasible region is a line segment connecting the points $(0,3)$ and $(3,0)$. These endpoints correspond to the extreme points (or BFSs) of the feasible region. Selecting one endpoint (i.e., setting one variable to zero and solving for the other) illustrates the idea of a basis in a simple, tangible manner. This example shows that by choosing an appropriate set of variables (the basis), we determine a unique solution that is critical to the simplex method.\nAdjacency and Basis Changes Adjacency of Basic Feasible Solutions Definition (Adjacent BFS):\nTwo basic feasible solutions are said to be adjacent (or corresponding to adjacent extreme points) if and only if their bases differ in exactly one column.\nIn other words, a new BFS can be generated from an existing one by replacing one basic variable with a nonbasic variable.\nNondegeneracy Assumption For many arguments it is convenient to assume:\nNondegeneracy Assumption: Every basic feasible solution of the LP is nondegenerate.\nUnder this assumption, when a new variable enters the basis, one of the basic variables decreases strictly to zero, ensuring a proper pivot.\nDetermination of the Leaving Variable Let the current BFS be partitioned as\n$$ \\mathbf{x} = \\begin{pmatrix} \\mathbf{x}_B \\\\ \\mathbf{x}_N \\end{pmatrix}, $$with basis matrix $\\mathbf{B}$ and nonbasic matrix $\\mathbf{N}$. Suppose a nonbasic variable $x_e$ (with column $\\mathbf{a}_e$) is chosen to enter the basis. Then the equality\n$$ \\mathbf{b} = \\mathbf{B}\\mathbf{x}_B + \\mathbf{a}_e x_e $$can be rewritten as\n$$ \\mathbf{x}_B = \\overline{\\mathbf{a}}_0 - x_e \\, \\overline{\\mathbf{a}}_e, $$where\n$$ \\overline{\\mathbf{a}}_0 = \\mathbf{B}^{-1}\\mathbf{b} \\quad \\text{and} \\quad \\overline{\\mathbf{a}}_e = \\mathbf{B}^{-1}\\mathbf{a}_e. $$To maintain feasibility ($\\mathbf{x}_B \\ge \\mathbf{0}$), we must have\n$$ x_e \\le \\min_{i:\\,\\overline{a}_{ie}\u003e0} \\frac{(\\overline{\\mathbf{a}}_0)\\_i}{\\overline{a}\\_{ie}}. $$The index achieving this minimum determines the leaving variable.\nConic Combination Interpretation A feasible solution for the system $\\mathbf{A}\\mathbf{x}=\\mathbf{b}$ with $\\mathbf{x} \\ge \\mathbf{0}$ represents a conic combination of the columns of $\\mathbf{A}$. In a BFS, only $m$ columns (the basic ones) are used with positive weights. This interpretation can be visualized in the requirements space (the space spanned by the columns of $\\mathbf{A}$). For example, if $\\mathbf{b}$ lies between columns $\\mathbf{a}_1$ and $\\mathbf{a}_2$ (in the appropriate sense), then a BFS with positive weights on $\\mathbf{a}_1$ and $\\mathbf{a}_2$ exists.\nFigure: Constraint representation in requirements space.\nThe Primal Simplex Method Determining an Optimal Feasible Solution Assume that the basis matrix $\\mathbf{B}$ consists of the first $m$ columns of $\\mathbf{A}$ and partition the data accordingly:\n$$ \\mathbf{A} = [\\mathbf{B}\\,|\\,\\mathbf{N}],\\quad \\mathbf{x} = \\begin{pmatrix}\\mathbf{x}_B \\\\ \\mathbf{x}_N \\end{pmatrix},\\quad \\mathbf{c}^\\top = [\\mathbf{c}_B^\\top \\,\\, \\mathbf{c}_N^\\top]. $$If the current BFS is given by\n$$ \\mathbf{x}_B = \\overline{\\mathbf{a}}_0 = \\mathbf{B}^{-1}\\mathbf{b}, \\quad \\mathbf{x}_N = \\mathbf{0}, $$then any feasible solution satisfies\n$$ \\mathbf{x}_B = \\mathbf{B}^{-1}\\mathbf{b} - \\mathbf{B}^{-1}\\mathbf{N}\\mathbf{x}_N. $$Substituting into the cost function gives\n$$ z = \\mathbf{c}^\\top \\mathbf{x} = \\mathbf{c}_B^\\top \\overline{\\mathbf{a}}_0 + \\left(\\mathbf{c}_N^\\top - \\mathbf{c}_B^\\top \\mathbf{B}^{-1}\\mathbf{N}\\right)\\mathbf{x}_N. $$Defining the simplex multipliers as\n$$ \\mathbf{y}^\\top = \\mathbf{c}_B^\\top \\mathbf{B}^{-1} $$and the reduced cost vector as\n$$ \\mathbf{r}_N^\\top = \\mathbf{c}_N^\\top - \\mathbf{y}^\\top \\mathbf{N}, $$we have\n$$ z = z_0 + \\mathbf{r}_N^\\top \\mathbf{x}_N,\\quad \\text{where } z_0 = \\mathbf{c}_B^\\top \\overline{\\mathbf{a}}_0. $$A negative component of $\\mathbf{r}_N$ indicates that increasing the corresponding nonbasic variable will improve the objective.\nImprovement and Optimality Conditions Theorem (Improvement of a Basic Feasible Solution):\nSuppose that in a nondegenerate BFS the current objective value is $z_0$ and for some nonbasic variable $x_j$ the reduced cost $r_j \u003c 0$. Then increasing $x_j$ from zero produces a new feasible solution with objective value $z \u003c z_0$. Moreover, if the associated pivot yields a new BFS, the new solution is strictly better. If no basic variable can leave the basis (i.e., all entries in $\\overline{\\mathbf{a}}_e$ are nonpositive), then the feasible region is unbounded and the objective can be decreased without bound.\nProof:\nSince $r_j \u003c 0$, any increase $x_j' \u003e 0$ results in\n$$ z - z_0 = r_j\\, x_j' \u003c 0. $$Feasibility is maintained by adjusting the basic variables as\n$$ \\mathbf{x}_B = \\overline{\\mathbf{a}}_0 - x_j'\\,\\overline{\\mathbf{a}}_j, $$and increasing $x_j'$ until the first basic variable hits zero. This change yields a new BFS with a strictly lower objective value.\nTheorem (Optimality Condition):\nIf all reduced costs satisfy $r_j \\ge 0$ for every nonbasic variable $x_j$, then the current BFS is optimal.\nProof:\nIf $r_j \\ge 0$ for all nonbasic variables, then any feasible change (which involves increasing a nonbasic variable from zero) would not lower the objective function. By duality and complementary slackness, the current solution is optimal.\nThe Revised Primal Simplex Procedure The primal simplex algorithm may be summarized as follows:\nStep 0 (Initialization):\nStart with a BFS corresponding to a basis $\\mathbf{B}$ with $\\mathbf{x}_B = \\overline{\\mathbf{a}}_0 = \\mathbf{B}^{-1}\\mathbf{b} \\ge \\mathbf{0}$ and $\\mathbf{x}_N = \\mathbf{0}$.\nStep 1 (Compute Multipliers and Reduced Costs):\nCalculate $\\mathbf{y}^\\top = \\mathbf{c}_B^\\top \\mathbf{B}^{-1}$ and $\\mathbf{r}_N^\\top = \\mathbf{c}_N^\\top - \\mathbf{y}^\\top \\mathbf{N}$. If $\\mathbf{r}_N \\ge \\mathbf{0}$, stop—the current solution is optimal.\nStep 2 (Choose Entering Variable):\nSelect a nonbasic index $e$ such that $r_e \u003c 0$. Compute $\\overline{\\mathbf{a}}_e = \\mathbf{B}^{-1}\\mathbf{a}_e$.\nStep 3 (Determine Leaving Variable):\nIf all entries of $\\overline{\\mathbf{a}}_e \\le 0$, then the problem is unbounded. Otherwise, compute the ratios\n$$ \\varepsilon_i = \\frac{(\\overline{\\mathbf{a}}_{0})_{i}}{\\overline{a}_{ie}} \\quad \\text{for } \\overline{a}_{ie} \u003e 0, $$and let $o = \\arg\\min_i \\varepsilon_i$. The $o$th basic variable leaves the basis.\nStep 4 (Pivot and Update):\nUpdate the basis (or its factorization) to reflect the exchange of $\\mathbf{a}_o$ and $\\mathbf{a}_e$. Compute the new BFS $\\overline{\\mathbf{a}}_0 = \\mathbf{B}^{-1}\\mathbf{b}$. Return to Step 1.\nRemark: Avoiding Cycling with Bland’s Rule An important refinement to the simplex method is Bland’s rule. This rule selects the entering and leaving variables by choosing the one with the smallest index that satisfies the improvement condition. Bland’s rule prevents cycling, ensuring convergence even in the presence of degeneracy. Although it may not always produce the fastest improvement in objective value, its use is valuable in both theoretical analysis and practical implementations to guarantee termination.\nExample: Primal Simplex Procedure Example (Primal Simplex Procedure Illustration):\nConsider the LP:\n$$ \\begin{array}{rl} \\text{minimize} \u0026 18x_1+12x_2+2x_3+6x_4, \\\\ \\text{subject to} \u0026 3x_1 + x_2 - 2x_3 + x_4 = 2, \\\\ \u0026 x_1+3x_2 - x_4 = 2, \\\\ \u0026 x_j \\ge 0,\\quad j=1,\\dots,4. \\end{array} $$Assume the initial basis is chosen with columns $\\mathbf{a}_1$ and $\\mathbf{a}_3$ (so that $x_2$ and $x_4$ are nonbasic). One carries out the following:\nStep 1: Compute $\\mathbf{B}$, its inverse, and the initial basic solution $\\overline{\\mathbf{a}}_0$. Step 2: Determine the simplex multipliers $\\mathbf{y}^\\top$ and the reduced cost vector $\\mathbf{r}_N^\\top$. In this example, suppose $r_2 \u003c 0$ so that $x_2$ is chosen as the entering variable. Step 3: Compute $\\overline{\\mathbf{a}}_2 = \\mathbf{B}^{-1}\\mathbf{a}_2$ and then the ratio $\\overline{\\mathbf{a}}_0 / \\overline{\\mathbf{a}}_2$ to select the leaving variable. Step 4: Update the basis, recalculate $\\mathbf{B}^{-1}$ and $\\overline{\\mathbf{a}}_0$, and continue. After a finite number of iterations, if all reduced costs are nonnegative, the current BFS is optimal.\nThe Dual Simplex Method In some cases the starting basis is not feasible for the primal but the corresponding dual solution is feasible. The dual simplex method exploits this situation by iterating on a dual feasible basis until primal feasibility is attained.\nDual Simplex Procedure Assume the current basis $\\mathbf{B}$ gives a primal solution $\\overline{\\mathbf{a}}_0 = \\mathbf{B}^{-1}\\mathbf{b}$ that is not feasible (i.e., some components are negative) but the dual multipliers $\\mathbf{y}^\\top = \\mathbf{c}_B^\\top \\mathbf{B}^{-1}$ yield a dual feasible solution with $\\mathbf{r}_N = \\mathbf{c}_N^\\top - \\mathbf{y}^\\top \\mathbf{N} \\ge \\mathbf{0}$.\nThe dual simplex algorithm proceeds as follows:\nStep 0 (Initialization):\nStart with a basis $\\mathbf{B}$ such that the dual is feasible.\nStep 1 (Select Leaving Variable):\nIdentify an index $o$ for which $(\\overline{\\mathbf{a}}_0)_o \u003c 0$ (choose the most negative component).\nStep 2 (Compute Dual Row and Determine Entering Variable):\nCompute the dual row $\\overline{\\mathbf{y}}^\\top = \\mathbf{e}_o^\\top \\mathbf{B}^{-1}$ and then $\\overline{\\mathbf{a}}^o = \\overline{\\mathbf{y}}^\\top \\mathbf{N}$. If $\\overline{\\mathbf{a}}^o \\ge 0$, the problem is unbounded. Otherwise, for each index $j$ with $\\overline{a}^o_j \u003c 0$, compute the ratio\n$$ \\rho_j = \\frac{r_j}{-\\overline{a}^o_j}, $$and let $e = \\arg\\min_j \\rho_j$. Then, column $e$ enters the basis.\nStep 3 (Update):\nPivot to update $\\mathbf{B}$ (or its factorization) and update $\\overline{\\mathbf{a}}_0$, $\\mathbf{y}$, and $\\mathbf{r}_N$. Return to Step 1.\nPractical Considerations for the Dual Simplex Method In many real-world scenarios, the dual simplex method offers a computational advantage, especially when the initial basis is nearly optimal for the dual but not feasible for the primal. It is particularly effective in reoptimization contexts, such as when small changes are made to a previously solved LP. However, similar to the primal simplex method, care must be taken to manage numerical precision and to select variables judiciously to ensure rapid convergence.\nExample: Dual Simplex Procedure Example (Dual Simplex Procedure Illustration):\nSuppose we start with a basis\n$$ \\mathbf{B} = \\begin{pmatrix} 1 \u0026 -2 \\\\ 3 \u0026 0 \\end{pmatrix} $$with corresponding inverse $\\mathbf{B}^{-1}$ and compute the primal solution $\\overline{\\mathbf{a}}_0$. If one component of $\\overline{\\mathbf{a}}_0$ is negative (say, the second component), then that row is used to compute $\\overline{\\mathbf{y}}^\\top$ and the dual row $\\overline{\\mathbf{a}}^o$. By forming the ratios of the reduced costs to $-\\overline{a}^o_j$ for nonbasic indices, the entering variable is determined. After pivoting, if the new primal solution becomes feasible, then optimality is reached.\nThe Primal-Dual Algorithm In the primal-dual method the primal and dual problems are solved simultaneously. Given a dual feasible solution $\\mathbf{y}$, define the index set\n$$ P = \\{ j : \\mathbf{y}^\\top \\mathbf{a}_j = c_j \\}. $$Then the associated restricted primal is\n$$ \\begin{aligned} \\text{minimize} \\quad \u0026 \\mathbf{1}^\\top \\mathbf{u} \\\\ \\text{subject to} \\quad \u0026 \\mathbf{A} \\mathbf{x} + \\mathbf{u} = \\mathbf{b},\\\\ \u0026 \\mathbf{x} \\ge \\mathbf{0}, \\quad x_j = 0 \\; \\text{for } j \\notin P,\\\\ \u0026 \\mathbf{u} \\ge \\mathbf{0}. \\end{aligned} $$Its dual (the restricted dual) provides an improving direction for $\\mathbf{y}$. The following theorem establishes the optimality of a pair of solutions.\nTheorem (Primal-Dual Optimality):\nSuppose $\\mathbf{y}$ is feasible for the dual and $(\\mathbf{x},\\mathbf{u}=\\mathbf{0})$ is feasible (and optimal) for the associated restricted primal above. Then $\\mathbf{x}$ and $\\mathbf{y}$ are optimal for the original primal and dual problems, respectively.\nProof:\nSince $\\mathbf{x}$ is feasible for the primal, and by complementary slackness the equality\n$$ \\mathbf{c}^\\top \\mathbf{x} = \\mathbf{y}^\\top \\mathbf{A}\\mathbf{x} = \\mathbf{y}^\\top \\mathbf{b} $$holds, optimality follows by strong duality.\nThe primal-dual method iteratively adjusts the dual solution $\\mathbf{y}$ (using an appropriate step size) until the restricted primal attains a zero optimal value, indicating that complementary slackness holds.\nEfficiency Analysis of the Simplex Method While extensive computational experience shows that the simplex method is efficient on most practical problems, worst-case examples exist. In this section we briefly outline a worst-case iteration bound under a basic value distribution property.\nBasic Value Distribution Definition (Basic Value Distribution):\nA BFS $\\mathbf{x}_B$ is said to satisfy the $(\\Delta,\\delta)$ property if\n$$ \\mathbf{1}^\\top \\mathbf{x}_B \\le \\Delta \\quad \\text{and} \\quad \\min_i (\\mathbf{x}_B)_i \\ge \\delta, $$for some positive constants $\\Delta$ and $\\delta$. This condition implies nondegeneracy and controls the spread of the basic variable values.\nGeometric Reduction of the Objective Gap Lemma:\nLet $\\mathbf{x}^k$ be the current BFS with objective value $z^k = \\mathbf{c}^\\top \\mathbf{x}^k$ and let $z^*$ denote the optimal objective value. Under the $(\\Delta,\\delta)$ property, the next BFS $\\mathbf{x}^{k+1}$ satisfies\n$$ \\frac{z^{k+1} - z^{*}}{z^{k} - z^{*}} \\le 1 - \\frac{\\delta}{\\Delta}. $$Proof:\nLet $r_e^k \u003c 0$ be the most negative reduced cost at iteration $k$. Then the gap $z^k - z^*$ can be bounded by\n$$ z^k - z^* \\le |r_e^k| \\Delta. $$Since the change in objective is at most $r_e^k \\delta$, we obtain\n$$ z^{k+1} - z^* \\le z^k - z^* - |r_e^k|\\delta \\le \\left(1-\\frac{\\delta}{\\Delta}\\right)(z^k-z^*). $$Elimination of Nonoptimal Variables Lemma:\nLet $\\mathbf{x}^0$ be a nonoptimal BFS with basis $B^0$. Then there exists a basic variable $x_{j^0}$ (with $j^0\\in B^0$ but not in the optimal basis $B^*$) that will never reappear in any BFS generated after\n$$ K := \\left\\lceil \\frac{\\Delta}{\\delta} \\log\\left(\\frac{m \\Delta}{\\delta}\\right) \\right\\rceil $$iterations.\nProof:\nSince the initial gap \\(z^0 - z^*\\) is positive and at least one basic variable not in the optimal basis must have a corresponding reduced cost $r^*_j$ bounded away from zero, after $K$ iterations (using the geometric reduction from the previous lemma) the contribution of that variable becomes negligible. A contradiction then shows that such a variable must leave the basis permanently.\nWorst-Case Iteration Bound Theorem:\nUnder the assumption that every BFS generated satisfies the $(\\Delta,\\delta)$ property, the simplex method terminates in at most\n$$ \\left\\lceil \\frac{(n-m)\\Delta}{\\delta} \\cdot \\log\\left(\\frac{m\\Delta}{\\delta}\\right) \\right\\rceil $$iterations.\nProof:\nSince there are at most $n-m$ nonoptimal basic variables that can be eliminated (by the previous lemma) and each elimination requires at most $\\left\\lceil \\frac{\\Delta}{\\delta}\\log\\left(\\frac{m\\Delta}{\\delta}\\right) \\right\\rceil$ iterations (by the geometric reduction lemma), the total number of iterations is bounded by the stated expression.\nDiscussion on Efficiency Analysis While the above theorem provides a worst-case iteration bound under the $(\\Delta,\\delta)$ property, it is important to emphasize that such worst-case scenarios are rarely encountered in practice. Typically, the simplex method converges in significantly fewer iterations than the bound suggests.\nPractical Implications The parameter ratio $\\delta/\\Delta$ plays a crucial role in the convergence speed. A higher ratio indicates that the basic variables are well-distributed (i.e., less degeneracy), which typically leads to faster convergence. This insight encourages the use of preconditioning or scaling techniques in linear programming solvers to improve the performance of the simplex algorithm in practice.\nSummary and Concluding Remarks In summary, we have provided a detailed exposition of the simplex method from both primal and dual perspectives. Key points include:\nOnly basic feasible solutions (extreme points) need be considered. A change of basis (pivot) is effected by choosing an entering variable (with a negative reduced cost in the primal or a leaving variable in the dual) and then determining the corresponding leaving variable via a ratio test. Both the primal and dual simplex methods converge to an optimal solution when one exists, with the dual simplex method particularly useful when the initial basis is dual feasible. Under a basic value distribution assumption, a worst-case iteration bound can be derived. These foundational ideas underpin modern implementations of the simplex algorithm and continue to influence optimization theory and practice.\n",
+  "wordCount" : "2601",
+  "inLanguage": "en",
+  "datePublished": "2025-03-21T21:15:01+03:00",
+  "dateModified": "2025-03-21T21:15:01+03:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Alexander Leib-Khizhik"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/simplex/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "XNDR Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="XNDR Blog (Alt + H)">XNDR Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/posts/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Simplex
+    </h1>
+    <div class="post-meta"><span title='2025-03-21 21:15:01 +0300 MSK'>March 21, 2025</span>&nbsp;·&nbsp;13 min&nbsp;·&nbsp;Alexander Leib-Khizhik
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="an-in-depth-overview-of-the-simplex-method">An In-Depth Overview of the Simplex Method<a hidden class="anchor" aria-hidden="true" href="#an-in-depth-overview-of-the-simplex-method">#</a></h1>
+<p><strong>Abstract</strong></p>
+<p>This document presents an in-depth exposition of the simplex method for solving linear programs. We discuss fundamental concepts such as basic feasible solutions (BFS), the notion of adjacency between extreme points, and the nondegeneracy assumption. Both the primal and the dual simplex methods are described from a matrix–theoretic viewpoint with illustrative examples. Finally, we present a worst-case efficiency analysis under a <em>basic value distribution</em> assumption.</p>
+<h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
+<p>The simplex method is one of the most widely used algorithms for solving linear programming (LP) problems. The method iteratively moves from one basic feasible solution (or extreme point) of the feasible region to an adjacent one, improving the objective function value at each step until optimality is reached. Theoretical results assure that it suffices to search only among basic feasible solutions, and duality theory provides termination criteria and optimality certificates. This document outlines both the primal and dual simplex methods, explains the mechanics of basis changes, and concludes with an analysis of worst-case performance.</p>
+<h2 id="basic-concepts-and-notation">Basic Concepts and Notation<a hidden class="anchor" aria-hidden="true" href="#basic-concepts-and-notation">#</a></h2>
+<p>Consider a linear program in standard form:</p>
+$$
+\begin{aligned}
+\text{minimize} \quad & \mathbf{c}^\top \mathbf{x} \\
+\text{subject to} \quad & \mathbf{A} \mathbf{x} = \mathbf{b}, \\
+& \mathbf{x} \ge \mathbf{0},
+\end{aligned}
+$$<p>where $\mathbf{A} \in \mathbb{R}^{m \times n}$ is of full row rank, $\mathbf{b}\in\mathbb{R}^m$, and $\mathbf{c}\in\mathbb{R}^n$.</p>
+<p>A <em>basic feasible solution</em> (BFS) is obtained by choosing a basis (a set of $m$ linearly independent columns of $\mathbf{A}$), solving for the corresponding basic variables, and setting the remaining $n-m$ nonbasic variables to zero. When the current basic solution is unique (i.e., all basic variables are strictly positive), it is said to be nondegenerate.</p>
+<h3 id="intuitive-explanation-of-a-basic-feasible-solution">Intuitive Explanation of a Basic Feasible Solution<a hidden class="anchor" aria-hidden="true" href="#intuitive-explanation-of-a-basic-feasible-solution">#</a></h3>
+<p>To build intuition, consider a simple linear program:</p>
+$$
+\begin{aligned}
+\text{minimize} \quad & x_1 + 2x_2, \\
+\text{subject to} \quad & x_1 + x_2 = 3, \\
+& x_1,\, x_2 \ge 0.
+\end{aligned}
+$$<p>Here, the feasible region is a line segment connecting the points $(0,3)$ and $(3,0)$. These endpoints correspond to the extreme points (or BFSs) of the feasible region. Selecting one endpoint (i.e., setting one variable to zero and solving for the other) illustrates the idea of a basis in a simple, tangible manner. This example shows that by choosing an appropriate set of variables (the basis), we determine a unique solution that is critical to the simplex method.</p>
+<h2 id="adjacency-and-basis-changes">Adjacency and Basis Changes<a hidden class="anchor" aria-hidden="true" href="#adjacency-and-basis-changes">#</a></h2>
+<h3 id="adjacency-of-basic-feasible-solutions">Adjacency of Basic Feasible Solutions<a hidden class="anchor" aria-hidden="true" href="#adjacency-of-basic-feasible-solutions">#</a></h3>
+<p><strong>Definition (Adjacent BFS):</strong><br>
+Two basic feasible solutions are said to be <em>adjacent</em> (or corresponding to adjacent extreme points) if and only if their bases differ in exactly one column.</p>
+<p>In other words, a new BFS can be generated from an existing one by replacing one basic variable with a nonbasic variable.</p>
+<h3 id="nondegeneracy-assumption">Nondegeneracy Assumption<a hidden class="anchor" aria-hidden="true" href="#nondegeneracy-assumption">#</a></h3>
+<p>For many arguments it is convenient to assume:</p>
+<blockquote>
+<p><strong>Nondegeneracy Assumption:</strong> Every basic feasible solution of the LP is nondegenerate.</p></blockquote>
+<p>Under this assumption, when a new variable enters the basis, one of the basic variables decreases strictly to zero, ensuring a proper pivot.</p>
+<h3 id="determination-of-the-leaving-variable">Determination of the Leaving Variable<a hidden class="anchor" aria-hidden="true" href="#determination-of-the-leaving-variable">#</a></h3>
+<p>Let the current BFS be partitioned as</p>
+$$
+\mathbf{x} = \begin{pmatrix} \mathbf{x}_B \\ \mathbf{x}_N \end{pmatrix},
+$$<p>with basis matrix $\mathbf{B}$ and nonbasic matrix $\mathbf{N}$. Suppose a nonbasic variable $x_e$ (with column $\mathbf{a}_e$) is chosen to enter the basis. Then the equality</p>
+$$
+\mathbf{b} = \mathbf{B}\mathbf{x}_B + \mathbf{a}_e x_e
+$$<p>can be rewritten as</p>
+$$
+\mathbf{x}_B = \overline{\mathbf{a}}_0 - x_e \, \overline{\mathbf{a}}_e,
+$$<p>where</p>
+$$
+\overline{\mathbf{a}}_0 = \mathbf{B}^{-1}\mathbf{b} \quad \text{and} \quad \overline{\mathbf{a}}_e = \mathbf{B}^{-1}\mathbf{a}_e.
+$$<p>To maintain feasibility ($\mathbf{x}_B \ge \mathbf{0}$), we must have</p>
+$$
+x_e \le \min_{i:\,\overline{a}_{ie}>0} \frac{(\overline{\mathbf{a}}_0)\_i}{\overline{a}\_{ie}}.
+$$<p>The index achieving this minimum determines the <em>leaving variable</em>.</p>
+<h3 id="conic-combination-interpretation">Conic Combination Interpretation<a hidden class="anchor" aria-hidden="true" href="#conic-combination-interpretation">#</a></h3>
+<p>A feasible solution for the system $\mathbf{A}\mathbf{x}=\mathbf{b}$ with $\mathbf{x} \ge \mathbf{0}$ represents a <em>conic combination</em> of the columns of $\mathbf{A}$. In a BFS, only $m$ columns (the basic ones) are used with positive weights. This interpretation can be visualized in the <em>requirements space</em> (the space spanned by the columns of $\mathbf{A}$). For example, if $\mathbf{b}$ lies between columns $\mathbf{a}_1$ and $\mathbf{a}_2$ (in the appropriate sense), then a BFS with positive weights on $\mathbf{a}_1$ and $\mathbf{a}_2$ exists.</p>
+<p><img alt="Constraint representation in requirements space" loading="lazy" src="/images/2025_03_05_4898a49105d0f480e2cdg-04.jpg"><br>
+<em>Figure: Constraint representation in requirements space.</em></p>
+<h2 id="the-primal-simplex-method">The Primal Simplex Method<a hidden class="anchor" aria-hidden="true" href="#the-primal-simplex-method">#</a></h2>
+<h3 id="determining-an-optimal-feasible-solution">Determining an Optimal Feasible Solution<a hidden class="anchor" aria-hidden="true" href="#determining-an-optimal-feasible-solution">#</a></h3>
+<p>Assume that the basis matrix $\mathbf{B}$ consists of the first $m$ columns of $\mathbf{A}$ and partition the data accordingly:</p>
+$$
+\mathbf{A} = [\mathbf{B}\,|\,\mathbf{N}],\quad \mathbf{x} = \begin{pmatrix}\mathbf{x}_B \\ \mathbf{x}_N \end{pmatrix},\quad \mathbf{c}^\top = [\mathbf{c}_B^\top \,\, \mathbf{c}_N^\top].
+$$<p>If the current BFS is given by</p>
+$$
+\mathbf{x}_B = \overline{\mathbf{a}}_0 = \mathbf{B}^{-1}\mathbf{b}, \quad \mathbf{x}_N = \mathbf{0},
+$$<p>then any feasible solution satisfies</p>
+$$
+\mathbf{x}_B = \mathbf{B}^{-1}\mathbf{b} - \mathbf{B}^{-1}\mathbf{N}\mathbf{x}_N.
+$$<p>Substituting into the cost function gives</p>
+$$
+z = \mathbf{c}^\top \mathbf{x} = \mathbf{c}_B^\top \overline{\mathbf{a}}_0 + \left(\mathbf{c}_N^\top - \mathbf{c}_B^\top \mathbf{B}^{-1}\mathbf{N}\right)\mathbf{x}_N.
+$$<p>Defining the <em>simplex multipliers</em> as</p>
+$$
+\mathbf{y}^\top = \mathbf{c}_B^\top \mathbf{B}^{-1}
+$$<p>and the <em>reduced cost vector</em> as</p>
+$$
+\mathbf{r}_N^\top = \mathbf{c}_N^\top - \mathbf{y}^\top \mathbf{N},
+$$<p>we have</p>
+$$
+z = z_0 + \mathbf{r}_N^\top \mathbf{x}_N,\quad \text{where } z_0 = \mathbf{c}_B^\top \overline{\mathbf{a}}_0.
+$$<p>A negative component of $\mathbf{r}_N$ indicates that increasing the corresponding nonbasic variable will improve the objective.</p>
+<h3 id="improvement-and-optimality-conditions">Improvement and Optimality Conditions<a hidden class="anchor" aria-hidden="true" href="#improvement-and-optimality-conditions">#</a></h3>
+<p><strong>Theorem (Improvement of a Basic Feasible Solution):</strong><br>
+Suppose that in a nondegenerate BFS the current objective value is $z_0$ and for some nonbasic variable $x_j$ the reduced cost $r_j < 0$. Then increasing $x_j$ from zero produces a new feasible solution with objective value $z < z_0$. Moreover, if the associated pivot yields a new BFS, the new solution is strictly better. If no basic variable can leave the basis (i.e., all entries in $\overline{\mathbf{a}}_e$ are nonpositive), then the feasible region is unbounded and the objective can be decreased without bound.</p>
+<p><strong>Proof:</strong><br>
+Since $r_j < 0$, any increase $x_j' > 0$ results in</p>
+$$
+z - z_0 = r_j\, x_j' < 0.
+$$<p>Feasibility is maintained by adjusting the basic variables as</p>
+$$
+\mathbf{x}_B = \overline{\mathbf{a}}_0 - x_j'\,\overline{\mathbf{a}}_j,
+$$<p>and increasing $x_j'$ until the first basic variable hits zero. This change yields a new BFS with a strictly lower objective value.</p>
+<p><strong>Theorem (Optimality Condition):</strong><br>
+If all reduced costs satisfy $r_j \ge 0$ for every nonbasic variable $x_j$, then the current BFS is optimal.</p>
+<p><strong>Proof:</strong><br>
+If $r_j \ge 0$ for all nonbasic variables, then any feasible change (which involves increasing a nonbasic variable from zero) would not lower the objective function. By duality and complementary slackness, the current solution is optimal.</p>
+<h3 id="the-revised-primal-simplex-procedure">The Revised Primal Simplex Procedure<a hidden class="anchor" aria-hidden="true" href="#the-revised-primal-simplex-procedure">#</a></h3>
+<p>The primal simplex algorithm may be summarized as follows:</p>
+<ul>
+<li>
+<p><strong>Step 0 (Initialization):</strong><br>
+Start with a BFS corresponding to a basis $\mathbf{B}$ with $\mathbf{x}_B = \overline{\mathbf{a}}_0 = \mathbf{B}^{-1}\mathbf{b} \ge \mathbf{0}$ and $\mathbf{x}_N = \mathbf{0}$.</p>
+</li>
+<li>
+<p><strong>Step 1 (Compute Multipliers and Reduced Costs):</strong><br>
+Calculate $\mathbf{y}^\top = \mathbf{c}_B^\top \mathbf{B}^{-1}$ and $\mathbf{r}_N^\top = \mathbf{c}_N^\top - \mathbf{y}^\top \mathbf{N}$. If $\mathbf{r}_N \ge \mathbf{0}$, stop—the current solution is optimal.</p>
+</li>
+<li>
+<p><strong>Step 2 (Choose Entering Variable):</strong><br>
+Select a nonbasic index $e$ such that $r_e < 0$. Compute $\overline{\mathbf{a}}_e = \mathbf{B}^{-1}\mathbf{a}_e$.</p>
+</li>
+<li>
+<p><strong>Step 3 (Determine Leaving Variable):</strong><br>
+If all entries of $\overline{\mathbf{a}}_e \le 0$, then the problem is unbounded. Otherwise, compute the ratios</p>
+$$
+  \varepsilon_i = \frac{(\overline{\mathbf{a}}_{0})_{i}}{\overline{a}_{ie}} \quad \text{for } \overline{a}_{ie} > 0,
+  $$<p>and let $o = \arg\min_i \varepsilon_i$. The $o$th basic variable leaves the basis.</p>
+</li>
+<li>
+<p><strong>Step 4 (Pivot and Update):</strong><br>
+Update the basis (or its factorization) to reflect the exchange of $\mathbf{a}_o$ and $\mathbf{a}_e$. Compute the new BFS $\overline{\mathbf{a}}_0 = \mathbf{B}^{-1}\mathbf{b}$. Return to Step 1.</p>
+</li>
+</ul>
+<h4 id="remark-avoiding-cycling-with-blands-rule">Remark: Avoiding Cycling with Bland&rsquo;s Rule<a hidden class="anchor" aria-hidden="true" href="#remark-avoiding-cycling-with-blands-rule">#</a></h4>
+<p>An important refinement to the simplex method is <em>Bland&rsquo;s rule</em>. This rule selects the entering and leaving variables by choosing the one with the smallest index that satisfies the improvement condition. Bland&rsquo;s rule prevents cycling, ensuring convergence even in the presence of degeneracy. Although it may not always produce the fastest improvement in objective value, its use is valuable in both theoretical analysis and practical implementations to guarantee termination.</p>
+<h4 id="example-primal-simplex-procedure">Example: Primal Simplex Procedure<a hidden class="anchor" aria-hidden="true" href="#example-primal-simplex-procedure">#</a></h4>
+<p><strong>Example (Primal Simplex Procedure Illustration):</strong><br>
+Consider the LP:</p>
+$$
+\begin{array}{rl}
+\text{minimize} & 18x_1+12x_2+2x_3+6x_4, \\
+\text{subject to} & 3x_1 + x_2 - 2x_3 + x_4 = 2, \\
+& x_1+3x_2 - x_4 = 2, \\
+& x_j \ge 0,\quad j=1,\dots,4.
+\end{array}
+$$<p>Assume the initial basis is chosen with columns $\mathbf{a}_1$ and $\mathbf{a}_3$ (so that $x_2$ and $x_4$ are nonbasic). One carries out the following:</p>
+<ol>
+<li><strong>Step 1:</strong> Compute $\mathbf{B}$, its inverse, and the initial basic solution $\overline{\mathbf{a}}_0$.</li>
+<li><strong>Step 2:</strong> Determine the simplex multipliers $\mathbf{y}^\top$ and the reduced cost vector $\mathbf{r}_N^\top$. In this example, suppose $r_2 < 0$ so that $x_2$ is chosen as the entering variable.</li>
+<li><strong>Step 3:</strong> Compute $\overline{\mathbf{a}}_2 = \mathbf{B}^{-1}\mathbf{a}_2$ and then the ratio $\overline{\mathbf{a}}_0 / \overline{\mathbf{a}}_2$ to select the leaving variable.</li>
+<li><strong>Step 4:</strong> Update the basis, recalculate $\mathbf{B}^{-1}$ and $\overline{\mathbf{a}}_0$, and continue.</li>
+</ol>
+<p>After a finite number of iterations, if all reduced costs are nonnegative, the current BFS is optimal.</p>
+<h2 id="the-dual-simplex-method">The Dual Simplex Method<a hidden class="anchor" aria-hidden="true" href="#the-dual-simplex-method">#</a></h2>
+<p>In some cases the starting basis is not feasible for the primal but the corresponding dual solution is feasible. The <em>dual simplex method</em> exploits this situation by iterating on a dual feasible basis until primal feasibility is attained.</p>
+<h3 id="dual-simplex-procedure">Dual Simplex Procedure<a hidden class="anchor" aria-hidden="true" href="#dual-simplex-procedure">#</a></h3>
+<p>Assume the current basis $\mathbf{B}$ gives a primal solution $\overline{\mathbf{a}}_0 = \mathbf{B}^{-1}\mathbf{b}$ that is not feasible (i.e., some components are negative) but the dual multipliers $\mathbf{y}^\top = \mathbf{c}_B^\top \mathbf{B}^{-1}$ yield a dual feasible solution with $\mathbf{r}_N = \mathbf{c}_N^\top - \mathbf{y}^\top \mathbf{N} \ge \mathbf{0}$.</p>
+<p>The dual simplex algorithm proceeds as follows:</p>
+<ul>
+<li>
+<p><strong>Step 0 (Initialization):</strong><br>
+Start with a basis $\mathbf{B}$ such that the dual is feasible.</p>
+</li>
+<li>
+<p><strong>Step 1 (Select Leaving Variable):</strong><br>
+Identify an index $o$ for which $(\overline{\mathbf{a}}_0)_o < 0$ (choose the most negative component).</p>
+</li>
+<li>
+<p><strong>Step 2 (Compute Dual Row and Determine Entering Variable):</strong><br>
+Compute the dual row $\overline{\mathbf{y}}^\top = \mathbf{e}_o^\top \mathbf{B}^{-1}$ and then $\overline{\mathbf{a}}^o = \overline{\mathbf{y}}^\top \mathbf{N}$. If $\overline{\mathbf{a}}^o \ge 0$, the problem is unbounded. Otherwise, for each index $j$ with $\overline{a}^o_j < 0$, compute the ratio</p>
+$$
+  \rho_j = \frac{r_j}{-\overline{a}^o_j},
+  $$<p>and let $e = \arg\min_j \rho_j$. Then, column $e$ enters the basis.</p>
+</li>
+<li>
+<p><strong>Step 3 (Update):</strong><br>
+Pivot to update $\mathbf{B}$ (or its factorization) and update $\overline{\mathbf{a}}_0$, $\mathbf{y}$, and $\mathbf{r}_N$. Return to Step 1.</p>
+</li>
+</ul>
+<h4 id="practical-considerations-for-the-dual-simplex-method">Practical Considerations for the Dual Simplex Method<a hidden class="anchor" aria-hidden="true" href="#practical-considerations-for-the-dual-simplex-method">#</a></h4>
+<p>In many real-world scenarios, the dual simplex method offers a computational advantage, especially when the initial basis is nearly optimal for the dual but not feasible for the primal. It is particularly effective in reoptimization contexts, such as when small changes are made to a previously solved LP. However, similar to the primal simplex method, care must be taken to manage numerical precision and to select variables judiciously to ensure rapid convergence.</p>
+<h4 id="example-dual-simplex-procedure">Example: Dual Simplex Procedure<a hidden class="anchor" aria-hidden="true" href="#example-dual-simplex-procedure">#</a></h4>
+<p><strong>Example (Dual Simplex Procedure Illustration):</strong><br>
+Suppose we start with a basis</p>
+$$
+\mathbf{B} = \begin{pmatrix} 1 & -2 \\ 3 & 0 \end{pmatrix}
+$$<p>with corresponding inverse $\mathbf{B}^{-1}$ and compute the primal solution $\overline{\mathbf{a}}_0$. If one component of $\overline{\mathbf{a}}_0$ is negative (say, the second component), then that row is used to compute $\overline{\mathbf{y}}^\top$ and the dual row $\overline{\mathbf{a}}^o$. By forming the ratios of the reduced costs to $-\overline{a}^o_j$ for nonbasic indices, the entering variable is determined. After pivoting, if the new primal solution becomes feasible, then optimality is reached.</p>
+<h2 id="the-primal-dual-algorithm">The Primal-Dual Algorithm<a hidden class="anchor" aria-hidden="true" href="#the-primal-dual-algorithm">#</a></h2>
+<p>In the <em>primal-dual</em> method the primal and dual problems are solved simultaneously. Given a dual feasible solution $\mathbf{y}$, define the index set</p>
+$$
+P = \{ j : \mathbf{y}^\top \mathbf{a}_j = c_j \}.
+$$<p>Then the associated <em>restricted primal</em> is</p>
+$$
+\begin{aligned}
+\text{minimize} \quad & \mathbf{1}^\top \mathbf{u} \\
+\text{subject to} \quad & \mathbf{A} \mathbf{x} + \mathbf{u} = \mathbf{b},\\
+& \mathbf{x} \ge \mathbf{0}, \quad x_j = 0 \; \text{for } j \notin P,\\
+& \mathbf{u} \ge \mathbf{0}.
+\end{aligned}
+$$<p>Its dual (the <em>restricted dual</em>) provides an improving direction for $\mathbf{y}$. The following theorem establishes the optimality of a pair of solutions.</p>
+<p><strong>Theorem (Primal-Dual Optimality):</strong><br>
+Suppose $\mathbf{y}$ is feasible for the dual and $(\mathbf{x},\mathbf{u}=\mathbf{0})$ is feasible (and optimal) for the associated restricted primal above. Then $\mathbf{x}$ and $\mathbf{y}$ are optimal for the original primal and dual problems, respectively.</p>
+<p><strong>Proof:</strong><br>
+Since $\mathbf{x}$ is feasible for the primal, and by complementary slackness the equality</p>
+$$
+\mathbf{c}^\top \mathbf{x} = \mathbf{y}^\top \mathbf{A}\mathbf{x} = \mathbf{y}^\top \mathbf{b}
+$$<p>holds, optimality follows by strong duality.</p>
+<p>The primal-dual method iteratively adjusts the dual solution $\mathbf{y}$ (using an appropriate step size) until the restricted primal attains a zero optimal value, indicating that complementary slackness holds.</p>
+<h2 id="efficiency-analysis-of-the-simplex-method">Efficiency Analysis of the Simplex Method<a hidden class="anchor" aria-hidden="true" href="#efficiency-analysis-of-the-simplex-method">#</a></h2>
+<p>While extensive computational experience shows that the simplex method is efficient on most practical problems, worst-case examples exist. In this section we briefly outline a worst-case iteration bound under a <em>basic value distribution</em> property.</p>
+<h3 id="basic-value-distribution">Basic Value Distribution<a hidden class="anchor" aria-hidden="true" href="#basic-value-distribution">#</a></h3>
+<p><strong>Definition (Basic Value Distribution):</strong><br>
+A BFS $\mathbf{x}_B$ is said to satisfy the $(\Delta,\delta)$ property if</p>
+$$
+\mathbf{1}^\top \mathbf{x}_B \le \Delta \quad \text{and} \quad \min_i (\mathbf{x}_B)_i \ge \delta,
+$$<p>for some positive constants $\Delta$ and $\delta$. This condition implies nondegeneracy and controls the spread of the basic variable values.</p>
+<h3 id="geometric-reduction-of-the-objective-gap">Geometric Reduction of the Objective Gap<a hidden class="anchor" aria-hidden="true" href="#geometric-reduction-of-the-objective-gap">#</a></h3>
+<p><strong>Lemma:</strong><br>
+Let $\mathbf{x}^k$ be the current BFS with objective value $z^k = \mathbf{c}^\top \mathbf{x}^k$ and let $z^*$ denote the optimal objective value. Under the $(\Delta,\delta)$ property, the next BFS $\mathbf{x}^{k+1}$ satisfies</p>
+$$
+\frac{z^{k+1} - z^{*}}{z^{k} - z^{*}} \le 1 - \frac{\delta}{\Delta}.
+$$<p><strong>Proof:</strong><br>
+Let $r_e^k < 0$ be the most negative reduced cost at iteration $k$. Then the gap $z^k - z^*$ can be bounded by</p>
+$$
+z^k - z^* \le |r_e^k| \Delta.
+$$<p>Since the change in objective is at most $r_e^k \delta$, we obtain</p>
+$$
+z^{k+1} - z^* \le z^k - z^* - |r_e^k|\delta \le \left(1-\frac{\delta}{\Delta}\right)(z^k-z^*).
+$$<h3 id="elimination-of-nonoptimal-variables">Elimination of Nonoptimal Variables<a hidden class="anchor" aria-hidden="true" href="#elimination-of-nonoptimal-variables">#</a></h3>
+<p><strong>Lemma:</strong><br>
+Let $\mathbf{x}^0$ be a nonoptimal BFS with basis $B^0$. Then there exists a basic variable $x_{j^0}$ (with $j^0\in B^0$ but not in the optimal basis $B^*$) that will never reappear in any BFS generated after</p>
+$$
+K := \left\lceil \frac{\Delta}{\delta} \log\left(\frac{m \Delta}{\delta}\right) \right\rceil
+$$<p>iterations.</p>
+<p><strong>Proof:</strong><br>
+Since the initial gap \(z^0 - z^*\) is positive and at least one basic variable not in the optimal basis must have a corresponding reduced cost $r^*_j$ bounded away from zero, after $K$ iterations (using the geometric reduction from the previous lemma) the contribution of that variable becomes negligible. A contradiction then shows that such a variable must leave the basis permanently.</p>
+<h3 id="worst-case-iteration-bound">Worst-Case Iteration Bound<a hidden class="anchor" aria-hidden="true" href="#worst-case-iteration-bound">#</a></h3>
+<p><strong>Theorem:</strong><br>
+Under the assumption that every BFS generated satisfies the $(\Delta,\delta)$ property, the simplex method terminates in at most</p>
+$$
+\left\lceil \frac{(n-m)\Delta}{\delta} \cdot \log\left(\frac{m\Delta}{\delta}\right) \right\rceil
+$$<p>iterations.</p>
+<p><strong>Proof:</strong><br>
+Since there are at most $n-m$ nonoptimal basic variables that can be eliminated (by the previous lemma) and each elimination requires at most $\left\lceil \frac{\Delta}{\delta}\log\left(\frac{m\Delta}{\delta}\right) \right\rceil$ iterations (by the geometric reduction lemma), the total number of iterations is bounded by the stated expression.</p>
+<h4 id="discussion-on-efficiency-analysis">Discussion on Efficiency Analysis<a hidden class="anchor" aria-hidden="true" href="#discussion-on-efficiency-analysis">#</a></h4>
+<p>While the above theorem provides a worst-case iteration bound under the $(\Delta,\delta)$ property, it is important to emphasize that such worst-case scenarios are rarely encountered in practice. Typically, the simplex method converges in significantly fewer iterations than the bound suggests.</p>
+<h5 id="practical-implications">Practical Implications<a hidden class="anchor" aria-hidden="true" href="#practical-implications">#</a></h5>
+<p>The parameter ratio $\delta/\Delta$ plays a crucial role in the convergence speed. A higher ratio indicates that the basic variables are well-distributed (i.e., less degeneracy), which typically leads to faster convergence. This insight encourages the use of preconditioning or scaling techniques in linear programming solvers to improve the performance of the simplex algorithm in practice.</p>
+<h2 id="summary-and-concluding-remarks">Summary and Concluding Remarks<a hidden class="anchor" aria-hidden="true" href="#summary-and-concluding-remarks">#</a></h2>
+<p>In summary, we have provided a detailed exposition of the simplex method from both primal and dual perspectives. Key points include:</p>
+<ul>
+<li>Only basic feasible solutions (extreme points) need be considered.</li>
+<li>A change of basis (pivot) is effected by choosing an entering variable (with a negative reduced cost in the primal or a leaving variable in the dual) and then determining the corresponding leaving variable via a ratio test.</li>
+<li>Both the primal and dual simplex methods converge to an optimal solution when one exists, with the dual simplex method particularly useful when the initial basis is dual feasible.</li>
+<li>Under a basic value distribution assumption, a worst-case iteration bound can be derived.</li>
+</ul>
+<p>These foundational ideas underpin modern implementations of the simplex algorithm and continue to influence optimization theory and practice.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="next" href="http://localhost:1313/posts/blogpost/">
+    <span class="title">Next »</span>
+    <br>
+    <span>My first blog post</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Simplex on x"
+            href="https://x.com/intent/tweet/?text=Simplex&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Simplex on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f&amp;title=Simplex&amp;summary=Simplex&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Simplex on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f&title=Simplex">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Simplex on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Simplex on whatsapp"
+            href="https://api.whatsapp.com/send?text=Simplex%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Simplex on telegram"
+            href="https://telegram.me/share/url?text=Simplex&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Simplex on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Simplex&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fsimplex%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">XNDR Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
